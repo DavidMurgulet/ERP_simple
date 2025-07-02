@@ -21,9 +21,19 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("auth/user/register/", CreateUserView.as_view(), name="register"),
-    path("auth/token/", TokenObtainPairView.as_view(), name="get_token"),
-    path("auth/token/refresh/", TokenRefreshView.as_view(), name="refresh"),
+    
+    # Authentication
+    path("api/auth/register/", CreateUserView.as_view(), name="register"),
+    path("api/auth/token/", TokenObtainPairView.as_view(), name="get_token"),
+    path("api/auth/token/refresh/", TokenRefreshView.as_view(), name="refresh"),
+    
+    # API Endpoints
+    path("api/employees/", include("employees.urls")),
+    path("api/tasks/", include("tasks.urls")),
+    # path("api/calendar/", include("calendar_app.urls")),  # Add when ready
+    # path("api/inventory/", include("inventory.urls")),    # Add when ready
+    # path("api/jobs/", include("job.urls")),               # Add when ready
+    
+    # DRF Browsable API
     path("api-auth/", include("rest_framework.urls")),
-    path("auth/", include("authentication.urls"))
 ]
