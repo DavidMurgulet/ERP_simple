@@ -1,0 +1,21 @@
+/* App.css */
+.app {
+  text-align: center;
+}
+
+/* Calendar specific styles */
+.rbc-calendar {
+  height: 500px;
+}
+
+.rbc-header {
+  border-bottom: 1px solid #ddd;
+}
+
+.rbc-event {
+  border-radius: 4px;
+}
+
+.rbc-today {
+  background-color: #f0f8ff;
+}

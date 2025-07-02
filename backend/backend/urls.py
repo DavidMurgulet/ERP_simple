@@ -30,7 +30,7 @@ urlpatterns = [
     # API Endpoints
     path("api/employees/", include("employees.urls")),
     path("api/tasks/", include("tasks.urls")),
-    # path("api/calendar/", include("calendar_app.urls")),  # Add when ready
+    path("api/calendar/", include("calendar_app.urls")),
     # path("api/inventory/", include("inventory.urls")),    # Add when ready
     # path("api/jobs/", include("job.urls")),               # Add when ready
     

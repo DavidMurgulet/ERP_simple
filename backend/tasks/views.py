@@ -84,13 +84,25 @@ def task_stats(request):
     completed_tasks = Task.objects.filter(status='completed').count()
     pending_tasks = Task.objects.filter(status='pending').count()
     in_progress_tasks = Task.objects.filter(status='in_progress').count()
+    calendar_tasks = Task.objects.filter(add_to_calendar=True, calendar_event__isnull=False).count()
     
     return Response({
         'total_tasks': total_tasks,
         'completed_tasks': completed_tasks,
         'pending_tasks': pending_tasks,
         'in_progress_tasks': in_progress_tasks,
+        'calendar_tasks': calendar_tasks,
         'completion_rate': (completed_tasks / total_tasks * 100) if total_tasks > 0 else 0
     })
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def tasks_with_colors(request):
+    """
+    Get all tasks with their status and priority colors
+    """
+    tasks = Task.objects.all().order_by('-created_at')
+    serializer = TaskSerializer(tasks, many=True)
+    return Response(serializer.data)
 
 # Create your views here.

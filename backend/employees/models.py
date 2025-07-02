@@ -19,11 +19,9 @@ class Employee(TimeStampedModel):
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     employee_id = models.CharField(max_length=20, unique=True)
-    department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True)
-    position = models.CharField(max_length=100)
-    hire_date = models.DateField()
-    salary = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    phone = models.CharField(max_length=20, blank=True)
+    # department = models.ForeignKey(Department, on_delete=models.SET_NULL, null=True)
+    # position = models.CharField(max_length=100)
+    # phone = models.CharField(max_length=20, blank=True)
     address = models.TextField(blank=True)
     is_active = models.BooleanField(default=True)
     
