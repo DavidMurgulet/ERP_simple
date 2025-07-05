@@ -4,16 +4,9 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
-from .models import Task, TaskCategory
-from .serializers import TaskSerializer, TaskCreateSerializer, TaskCategorySerializer
+from .models import Task
+from .serializers import TaskSerializer, TaskCreateSerializer
 
-class TaskCategoryListCreateView(generics.ListCreateAPIView):
-    """
-    List all task categories or create a new category
-    """
-    queryset = TaskCategory.objects.all()
-    serializer_class = TaskCategorySerializer
-    permission_classes = [IsAuthenticated]
 
 class TaskListCreateView(generics.ListCreateAPIView):
     """

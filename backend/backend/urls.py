@@ -23,12 +23,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     
     # Authentication
-    path("api/auth/register/", CreateUserView.as_view(), name="register"),
-    path("api/auth/token/", TokenObtainPairView.as_view(), name="get_token"),
-    path("api/auth/token/refresh/", TokenRefreshView.as_view(), name="refresh"),
+    path("api/auth/", include("authentication.urls")),
     
     # API Endpoints
-    path("api/employees/", include("employees.urls")),
     path("api/tasks/", include("tasks.urls")),
     path("api/calendar/", include("calendar_app.urls")),
     # path("api/inventory/", include("inventory.urls")),    # Add when ready

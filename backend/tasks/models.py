@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from core.models import TimeStampedModel
 
 class Task(TimeStampedModel):      
-    # color on calendar based on type of task. ASk gabi 
     title = models.CharField(max_length=200)
     task_type = models.CharField(max_length=20, choices=[('job', 'Job'), ('general', 'General')], default='general')
     description = models.TextField(blank=True)
@@ -28,10 +27,11 @@ class JobTask(Task):
         ('painting', 'Painting'),
         ('assembly', 'Assembly'),
         ('delivery', 'Delivery'),
-        ('installation', 'Installation'),
+        ('installation', 'Installation'),   
         ('completed', 'Completed')
     ]
-    client = models.ForeignKey('clients.Client', on_delete=models.CASCADE, related_name='job_tasks')
+    # client = models.ForeignKey('clients.Client', on_delete=models.CASCADE, related_name='job_tasks')  # Temporarily commented out - clients app doesn't exist
+    client_name = models.CharField(max_length=200, blank=True, help_text="Client name for this job task")
     task_progress = models.CharField(max_length=20, choices=MANUFACTURING_STAGE, default='cnc')
     ## review these fields
     plans = models.FileField(upload_to='job_tasks/plans/', null=True, blank=True)

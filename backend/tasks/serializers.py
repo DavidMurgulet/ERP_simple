@@ -1,11 +1,7 @@
 from rest_framework import serializers
-from .models import Task, TaskCategory
+from .models import Task
 from django.contrib.auth.models import User
 
-class TaskCategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TaskCategory
-        fields = ['id', 'name', 'color', 'created_at', 'updated_at']
 
 class UserSimpleSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,7 +11,6 @@ class UserSimpleSerializer(serializers.ModelSerializer):
 class TaskSerializer(serializers.ModelSerializer):
     assigned_to = UserSimpleSerializer(read_only=True)
     created_by = UserSimpleSerializer(read_only=True)
-    category = TaskCategorySerializer(read_only=True)
     status_color = serializers.ReadOnlyField()
     priority_color = serializers.ReadOnlyField()
     
