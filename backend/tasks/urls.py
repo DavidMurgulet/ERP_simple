@@ -9,5 +9,5 @@ urlpatterns = [
     path('tasks/<int:pk>/complete/', views.complete_task, name='task-complete'),
     path('tasks/my-tasks/', views.my_tasks, name='my-tasks'),
     path('tasks/stats/', views.task_stats, name='task-stats'),
-    path('tasks/with-colors/', views.tasks_with_colors, name='tasks-with-colors'),
+    path('tasks/by-type/', views.tasks_by_type, name='tasks-by-type'),
 ]
