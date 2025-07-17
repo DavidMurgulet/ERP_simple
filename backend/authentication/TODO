@@ -1,0 +1,6 @@
+Authentication TODO list
+- Distinguish between admin (managers) and employees (workers) in order to restrict some actions to a role.
+    - Admin should be able to add new workers.
+
+- Manually set admin during setup.
+- Email verification 

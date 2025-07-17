@@ -62,9 +62,10 @@ INSTALLED_APPS = [
     # ERP Apps
     "core",
     "authentication",  # Renamed from api
-    "tasks",
+    "employees.apps.EmployeesConfig",
     "calendar_app",
     "inventory",
+    "projects"
 ]
 
 MIDDLEWARE = [

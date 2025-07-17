@@ -16,17 +16,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from authentication.views import CreateUserView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', include('django.contrib.auth.urls')), 
     
     # Authentication
     path("api/auth/", include("authentication.urls")),
     
     # API Endpoints
-    path("api/tasks/", include("tasks.urls")),
+    path("api/projects/", include("projects.urls")),
+    path("api/employees/", include("employees.urls")),
     path("api/calendar/", include("calendar_app.urls")),
     # path("api/inventory/", include("inventory.urls")),    # Add when ready
     # path("api/jobs/", include("job.urls")),               # Add when ready

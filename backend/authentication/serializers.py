@@ -23,7 +23,10 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         email = validated_data.get('email').lower()
         validated_data['username'] = email
 
+        
         user = User.objects.create_user(**validated_data)
+
+
         return user
 
 class UserLoginSerializer(serializers.Serializer):

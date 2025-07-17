@@ -1,0 +1,18 @@
+TODO
+- Adding a project should auto add its deadline to the calendar
+    - Projects on calendar are color coded to reflece their current progress (not started, complete, delivered etc)
+
+✅ Show last edited by in a projects details
+- Add an mark as in-progress endpoint to take it off the completed list
+- Last updated -> create a log for all edits 
+- Integrate Inventory + plans 
+COMPLETED FEATURES:
+✅ Horizontal project list layout with cards
+✅ Proper workflow: Click project → View details → Edit/Update/Delete actions
+✅ Inline dropdown editing for manufacturing stage and progress (ONLY in detail view)
+✅ Separate edit dialog for title, client, and due date only
+✅ DatePicker instead of DateTimePicker for due dates
+✅ Enhanced visual design with better spacing and hover effects
+✅ Last updated by user display in project details
+✅ Context menu with actions only available in detail view
+✅ Clean card layout without action buttons in list view
