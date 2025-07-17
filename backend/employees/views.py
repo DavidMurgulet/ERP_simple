@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
 from .models import Employee
 from .serializers import EmployeeSerializer
+from authentication.permissions import IsManager, isEmployee
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -30,7 +31,7 @@ def create_employee(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated]) 
+@permission_classes([IsAuthenticated, IsManager]) 
 def get_employee(request, pk):
     """
     Retrieve an employee by ID.
@@ -71,26 +72,6 @@ def delete_employee(request, pk):
     except Employee.DoesNotExist:
         return Response({'error': 'Employee not found'}, status=status.HTTP_404_NOT_FOUND)
 
-# class EmployeeListCreateView(generics.ListCreateAPIView):
-#     """
-#     List all employees or create a new employee
-#     """
-#     queryset = Employee.objects.all()
-#     permission_classes = [IsAuthenticated]
-    
-#     def get_serializer_class(self):
-#         if self.request.method == 'POST':
-#             return EmployeeCreateSerializer
-#         return EmployeeSerializer
-
-# class EmployeeDetailView(generics.RetrieveUpdateDestroyAPIView):
-#     """
-#     Retrieve, update or delete an employee
-#     """
-#     queryset = Employee.objects.all()
-#     serializer_class = EmployeeSerializer
-#     permission_classes = [IsAuthenticated]
-
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def employee_stats(request):
@@ -107,4 +88,14 @@ def employee_stats(request):
         'inactive_employees': Employee.objects.filter(is_active=False).count(),
     })
 
-# Create your views here.
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def check_manager_permissions(request):
+    """
+    Check if current user has manager permissions
+    """
+    is_manager = request.user.groups.filter(name='Manager').exists()
+    return Response({
+        'is_manager': is_manager,
+        'user_groups': list(request.user.groups.values_list('name', flat=True))
+    })
