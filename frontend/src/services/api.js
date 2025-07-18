@@ -57,10 +57,10 @@ api.interceptors.response.use(
   }
 );
 
-// Auth API endpoints
+// Auth API endpoints only
 export const authAPI = {
-  login: (credentials) => api.post('/auth/login/', credentials),
-  register: (userData) => api.post('/auth/register/', userData),
+  login: (credentials) => api.post('auth/login/', credentials),
+  register: (userData) => api.post('auth/register/', userData),
   logout: () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
@@ -69,31 +69,56 @@ export const authAPI = {
   getCurrentUser: () => api.get('/auth/user/'),
 };
 
-// Tasks API endpoints
-export const tasksAPI = {
-  getTasks: (params) => api.get('/tasks/', { params }),
-  getTask: (id) => api.get(`/tasks/${id}/`),
-  createTask: (taskData) => api.post('/tasks/', taskData),
-  updateTask: (id, taskData) => api.put(`/tasks/${id}/`, taskData),
-  deleteTask: (id) => api.delete(`/tasks/${id}/`),
+// Projects API endpoints
+export const projectsAPI = {
+  // Get all projects
+  list: () => api.get('/projects/'),
+  
+  // Create a new project
+  create: (projectData) => api.post('/projects/create/', projectData),
+  
+  // Get project details
+  detail: (id) => api.get(`/projects/${id}/`),
+  
+  // Update project
+  update: (id, projectData) => api.put(`/projects/${id}/update/`, projectData),
+  
+  // Delete project
+  delete: (id) => api.delete(`/projects/${id}/delete/`),
+  
+  // Mark project as completed
+  complete: (id) => api.post(`/projects/${id}/complete/`),
+  
+  // Get completed projects
+  getCompleted: () => api.get('/projects/completed/'),
+  
+  // Get in-progress projects
+  getInProgress: () => api.get('/projects/in-progress/'),
 };
 
 // Employees API endpoints
 export const employeesAPI = {
-  getEmployees: (params) => api.get('/employees/', { params }),
-  getEmployee: (id) => api.get(`/employees/${id}/`),
-  createEmployee: (employeeData) => api.post('/employees/', employeeData),
-  updateEmployee: (id, employeeData) => api.put(`/employees/${id}/`, employeeData),
-  deleteEmployee: (id) => api.delete(`/employees/${id}/`),
-};
+  // Get all employees
+  list: () => api.get('/employees/'),
+  
+  // Create a new employee
+  create: (employeeData) => api.post('/employees/create/', employeeData),
+  
+  // Get employee details
+  detail: (id) => api.get(`/employees/${id}/`),
+  
+  // Update employee
+  update: (id, employeeData) => api.put(`/employees/${id}/update/`, employeeData),
+  
+  // Delete employee
+  delete: (id) => api.delete(`/employees/${id}/delete/`),
+  
+  // Get employee statistics
+  stats: () => api.get('/employees/stats/'),
+  
+  // Check manager permissions
+  checkManagerPermissions: () => api.get('/employees/permissions/check/'),
 
-// Calendar API endpoints
-export const calendarAPI = {
-  getEvents: (params) => api.get('/calendar/', { params }),
-  getEvent: (id) => api.get(`/calendar/${id}/`),
-  createEvent: (eventData) => api.post('/calendar/', eventData),
-  updateEvent: (id, eventData) => api.put(`/calendar/${id}/`, eventData),
-  deleteEvent: (id) => api.delete(`/calendar/${id}/`),
 };
 
 export default api;

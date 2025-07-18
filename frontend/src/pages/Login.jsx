@@ -73,7 +73,6 @@ const Login = () => {
               fullWidth
               name="email"
               label="Email"
-              type="email"
               value={formData.email}
               onChange={handleChange}
               margin="normal"

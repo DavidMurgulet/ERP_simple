@@ -17,8 +17,9 @@ const Register = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    firstName: '',
-    lastName: '',
+    first_name: '',
+    last_name: '',
+    phone: '',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -44,11 +45,12 @@ const Register = () => {
       return;
     }
 
-    const { confirmPassword, ...registrationData } = formData;
-    const result = await register(registrationData);
+    // Send all form data including confirmPassword to backend
+    const result = await register(formData);
     
     if (result.success) {
       navigate('/dashboard');
+      // need to add login functionality. 
     } else {
       setError(result.error);
     }
@@ -78,9 +80,9 @@ const Register = () => {
           <Box component="form" onSubmit={handleSubmit}>
             <TextField
               fullWidth
-              name="firstName"
+              name="first_name"
               label="First Name"
-              value={formData.firstName}
+              value={formData.first_name}
               onChange={handleChange}
               margin="normal"
               required
@@ -89,9 +91,9 @@ const Register = () => {
             
             <TextField
               fullWidth
-              name="lastName"
+              name="last_name"
               label="Last Name"
-              value={formData.lastName}
+              value={formData.last_name}
               onChange={handleChange}
               margin="normal"
               required
@@ -107,6 +109,18 @@ const Register = () => {
               margin="normal"
               required
             />
+
+            <TextField
+              fullWidth
+              name="phone"
+              label="Phone Number"
+              type="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              margin="normal"
+              required
+            />
+
             
             <TextField
               fullWidth

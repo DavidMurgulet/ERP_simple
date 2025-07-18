@@ -15,6 +15,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authLoading, setAuthLoading] = useState(false); // Add auth operation loading state
 
   // Check if user is authenticated on app startup
   useEffect(() => {
@@ -39,6 +40,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = async (credentials) => {
+    setAuthLoading(true);
+    const startTime = Date.now();
+    
     try {
       const response = await authAPI.login(credentials);
       const { access, refresh, user: userData } = response.data;
@@ -53,13 +57,27 @@ export const AuthProvider = ({ children }) => {
       console.error('Login failed:', error);
       return { 
         success: false, 
-        error: error.response?.data?.message || 'Login failed' 
+        error: error.response?.data?.non_field_errors?.[0] || 
+               error.response?.data?.message || 
+               'Invalid credentials'
       };
+    } finally {
+      // Ensure loading screen shows for at least 3 seconds
+      const elapsedTime = Date.now() - startTime;
+      const remainingTime = Math.max(0, 3000 - elapsedTime);
+      
+      setTimeout(() => {
+        setAuthLoading(false);
+      }, remainingTime);
     }
   };
 
   const register = async (userData) => {
+    setAuthLoading(true);
+    const startTime = Date.now();
+    
     try {
+      console.log('Registering user with data:', userData); // Debug log
       const response = await authAPI.register(userData);
       const { access, refresh, user: newUser } = response.data;
       
@@ -71,10 +89,41 @@ export const AuthProvider = ({ children }) => {
       return { success: true };
     } catch (error) {
       console.error('Registration failed:', error);
+      console.error('Error response:', error.response); // More detailed error logging
+      
+      // Extract specific error messages
+      let errorMessage = 'Registration failed';
+      if (error.response?.data) {
+        const data = error.response.data;
+        if (data.non_field_errors) {
+          errorMessage = data.non_field_errors[0];
+        } else if (data.message) {
+          errorMessage = data.message;
+        } else if (typeof data === 'object') {
+          // Handle field-specific errors
+          const firstError = Object.values(data)[0];
+          if (Array.isArray(firstError)) {
+            errorMessage = firstError[0];
+          } else if (typeof firstError === 'string') {
+            errorMessage = firstError;
+          }
+        }
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       return { 
         success: false, 
-        error: error.response?.data?.message || 'Registration failed' 
+        error: errorMessage
       };
+    } finally {
+      // Ensure loading screen shows for at least 3 seconds
+      const elapsedTime = Date.now() - startTime;
+      const remainingTime = Math.max(0, 3000 - elapsedTime);
+      
+      setTimeout(() => {
+        setAuthLoading(false);
+      }, remainingTime);
     }
   };
 
@@ -92,6 +141,7 @@ export const AuthProvider = ({ children }) => {
     user,
     isAuthenticated,
     loading,
+    authLoading,
     login,
     register,
     logout,

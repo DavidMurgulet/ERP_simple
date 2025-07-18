@@ -1,217 +1,346 @@
-import { useEffect, useState } from 'react';
-import {
-  Grid,
-  Card,
-  CardContent,
-  Typography,
-  Box,
-  Paper,
+import { useState } from 'react';
+import { 
+  Box, 
+  Typography, 
+  Tabs, 
+  Tab, 
+  Button,
+  Avatar,
+  Menu,
+  MenuItem,
+  IconButton,
+  Drawer,
   List,
   ListItem,
+  ListItemButton,
+  ListItemIcon,
   ListItemText,
-  Chip,
+  Divider,
+  Tooltip,
+  Fade
 } from '@mui/material';
-import {
-  Assignment as TasksIcon,
-  People as EmployeesIcon,
-  Event as CalendarIcon,
-  TrendingUp as TrendingUpIcon,
+import { 
+  AccountCircle as AccountCircleIcon,
+  Logout as LogoutIcon,
+  CalendarToday as CalendarIcon,
+  Work as ProjectsIcon,
+  People as PeopleIcon,
+  Inventory as InventoryIcon,
+  ViewKanban as KanbanIcon,
+  Settings as SettingsIcon,
+  ChevronLeft as ChevronLeftIcon,
+  ChevronRight as ChevronRightIcon
 } from '@mui/icons-material';
-import { useQuery } from '@tanstack/react-query';
-import { tasksAPI, employeesAPI, calendarAPI } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import CalendarTab from '../components/CalendarTab';
+import ProjectsTab from '../components/ProjectsTab';
+import EmployeesTab from '../components/EmployeesTab';
+import InventoryTab from '../components/InventoryTab';
+import KanbanTab from '../components/KanbanTab';
+import UserSettingsTab from '../components/UserSettingsTab';
+
+function TabPanel({ children, value, index, ...other }) {
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`tabpanel-${index}`}
+      aria-labelledby={`tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3, width: '100%' }}>
+          {children}
+        </Box>
+      )}
+    </div>
+  );
+}
+
+const drawerWidth = 220;
+const drawerWidthCollapsed = 72;
 
 const Dashboard = () => {
-  const { data: tasks = [] } = useQuery({
-    queryKey: ['tasks'],
-    queryFn: () => tasksAPI.getTasks().then(res => res.data),
-  });
+  const [tabValue, setTabValue] = useState(0);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [drawerMinimized, setDrawerMinimized] = useState(false);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
-  const { data: employees = [] } = useQuery({
-    queryKey: ['employees'],
-    queryFn: () => employeesAPI.getEmployees().then(res => res.data),
-  });
+  const tabItems = [
+    { label: 'Calendar', icon: <CalendarIcon /> },
+    { label: 'Projects', icon: <ProjectsIcon /> },
+    { label: 'Employees', icon: <PeopleIcon /> },
+    { label: 'Inventory', icon: <InventoryIcon /> },
+    { label: 'Workspace', icon: <KanbanIcon /> },
+    { label: 'User Settings', icon: <SettingsIcon /> }
+  ];
 
-  const { data: events = [] } = useQuery({
-    queryKey: ['events'],
-    queryFn: () => calendarAPI.getEvents().then(res => res.data),
-  });
-
-  // Calculate statistics
-  const tasksStats = {
-    total: tasks.length,
-    pending: tasks.filter(task => task.status === 'pending').length,
-    inProgress: tasks.filter(task => task.status === 'in_progress').length,
-    completed: tasks.filter(task => task.status === 'completed').length,
+  const handleTabChange = (newValue) => {
+    setTabValue(newValue);
   };
 
-  const recentTasks = tasks
-    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-    .slice(0, 5);
-
-  const upcomingEvents = events
-    .filter(event => new Date(event.start_date) > new Date())
-    .sort((a, b) => new Date(a.start_date) - new Date(b.start_date))
-    .slice(0, 5);
-
-  const StatCard = ({ title, value, icon, color = 'primary' }) => (
-    <Card>
-      <CardContent>
-        <Box display="flex" alignItems="center">
-          <Box
-            sx={{
-              p: 1,
-              borderRadius: 1,
-              backgroundColor: `${color}.light`,
-              color: `${color}.main`,
-              mr: 2,
-            }}
-          >
-            {icon}
-          </Box>
-          <Box>
-            <Typography variant="h4" component="div">
-              {value}
-            </Typography>
-            <Typography color="text.secondary">
-              {title}
-            </Typography>
-          </Box>
-        </Box>
-      </CardContent>
-    </Card>
-  );
-
-  const getStatusColor = (status) => {
-    const colors = {
-      pending: 'warning',
-      in_progress: 'info',
-      completed: 'success',
-      cancelled: 'error',
-    };
-    return colors[status] || 'default';
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
   };
 
-  const getPriorityColor = (priority) => {
-    const colors = {
-      low: 'success',
-      medium: 'warning',
-      high: 'error',
-      urgent: 'error',
-    };
-    return colors[priority] || 'default';
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = async () => {
+    handleMenuClose();
+    await logout();
+    navigate('/login');
+  };
+
+  const handleUserSettings = () => {
+    handleMenuClose();
+    setTabValue(5); // Switch to User Settings tab (now index 5)
+  };
+
+  const toggleDrawer = () => {
+    setDrawerMinimized(!drawerMinimized);
   };
 
   return (
-    <Box>
-      <Typography variant="h4" gutterBottom>
-        Dashboard
-      </Typography>
-      
-      {/* Statistics Cards */}
-      <Grid container spacing={3} sx={{ mb: 3 }}>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            title="Total Tasks"
-            value={tasksStats.total}
-            icon={<TasksIcon />}
-            color="primary"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            title="In Progress"
-            value={tasksStats.inProgress}
-            icon={<TrendingUpIcon />}
-            color="info"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            title="Employees"
-            value={employees.length}
-            icon={<EmployeesIcon />}
-            color="success"
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            title="Upcoming Events"
-            value={upcomingEvents.length}
-            icon={<CalendarIcon />}
-            color="warning"
-          />
-        </Grid>
-      </Grid>
-
-      <Grid container spacing={3}>
-        {/* Recent Tasks */}
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 2 }}>
-            <Typography variant="h6" gutterBottom>
-              Recent Tasks
+    <Fade in={true} timeout={800}>
+      <Box sx={{ display: 'flex', height: '100vh' }}>
+      {/* Sidebar */}
+      <Drawer
+        variant="permanent"
+        sx={{
+          width: drawerMinimized ? drawerWidthCollapsed : drawerWidth,
+          flexShrink: 0,
+          transition: 'width 0.3s ease',
+          '& .MuiDrawer-paper': {
+            width: drawerMinimized ? drawerWidthCollapsed : drawerWidth,
+            boxSizing: 'border-box',
+            backgroundColor: '#2d2d2d',
+            color: 'white',
+            borderRight: 'none',
+            transition: 'width 0.3s ease',
+            overflowX: 'hidden'
+          },
+        }}
+      >
+        {/* SERP Logo/Brand */}
+        <Box sx={{ 
+          p: drawerMinimized ? 1 : 3, 
+          textAlign: 'center', 
+          borderBottom: '1px solid #404040',
+          transition: 'padding 0.3s ease'
+        }}>
+          {drawerMinimized ? (
+            <Typography 
+              variant="h6" 
+              sx={{ 
+                fontWeight: 'bold', 
+                color: '#4fc3f7',
+                letterSpacing: '1px',
+                fontSize: '1rem'
+              }}
+            >
+              S
             </Typography>
-            <List>
-              {recentTasks.map((task) => (
-                <ListItem key={task.id} divider>
-                  <ListItemText
-                    primary={task.title}
-                    secondary={task.description}
-                  />
-                  <Box display="flex" gap={1}>
-                    <Chip
-                      label={task.status}
-                      color={getStatusColor(task.status)}
-                      size="small"
-                    />
-                    <Chip
-                      label={task.priority}
-                      color={getPriorityColor(task.priority)}
-                      size="small"
-                      variant="outlined"
-                    />
-                  </Box>
-                </ListItem>
-              ))}
-              {recentTasks.length === 0 && (
-                <ListItem>
-                  <ListItemText primary="No tasks found" />
-                </ListItem>
-              )}
-            </List>
-          </Paper>
-        </Grid>
-
-        {/* Upcoming Events */}
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 2 }}>
-            <Typography variant="h6" gutterBottom>
-              Upcoming Events
+          ) : (
+            <Typography 
+              variant="h4" 
+              sx={{ 
+                fontWeight: 'bold', 
+                color: '#4fc3f7',
+                letterSpacing: '2px'
+              }}
+            >
+              SERP
             </Typography>
-            <List>
-              {upcomingEvents.map((event) => (
-                <ListItem key={event.id} divider>
-                  <ListItemText
-                    primary={event.title}
-                    secondary={`${new Date(event.start_date).toLocaleDateString()} - ${event.event_type}`}
+          )}
+        </Box>
+
+        {/* Toggle Button */}
+        <Box sx={{ 
+          textAlign: 'center', 
+          py: 1,
+          borderBottom: '1px solid #404040'
+        }}>
+          <IconButton
+            onClick={toggleDrawer}
+            sx={{ 
+              color: '#bdbdbd',
+              '&:hover': { 
+                backgroundColor: '#404040',
+                color: '#4fc3f7'
+              }
+            }}
+          >
+            {drawerMinimized ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+          </IconButton>
+        </Box>
+
+        {/* User Section */}
+        <Box sx={{ 
+          p: drawerMinimized ? 1 : 2, 
+          textAlign: 'center',
+          borderBottom: '1px solid #404040',
+          transition: 'padding 0.3s ease'
+        }}>
+          <IconButton
+            onClick={handleMenuOpen}
+            sx={{ 
+              mb: drawerMinimized ? 0 : 1,
+              '&:hover': { backgroundColor: '#404040' }
+            }}
+          >
+            <Avatar sx={{ 
+              bgcolor: '#4fc3f7', 
+              width: drawerMinimized ? 40 : 56, 
+              height: drawerMinimized ? 40 : 56,
+              fontSize: drawerMinimized ? '1rem' : '1.5rem',
+              transition: 'all 0.3s ease'
+            }}>
+              {user?.first_name?.[0]}{user?.last_name?.[0]}
+            </Avatar>
+          </IconButton>
+          {!drawerMinimized && (
+            <Typography variant="body2" sx={{ color: '#bdbdbd', fontSize: '0.875rem' }}>
+              {user?.first_name} {user?.last_name}
+            </Typography>
+          )}
+          
+          <Menu
+            id="menu-appbar"
+            anchorEl={anchorEl}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'center',
+            }}
+            keepMounted
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'center',
+            }}
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+          >
+            <MenuItem onClick={handleUserSettings}>
+              <AccountCircleIcon sx={{ mr: 2 }} />
+              User Settings
+            </MenuItem>
+            <MenuItem onClick={handleLogout}>
+              <LogoutIcon sx={{ mr: 2 }} />
+              Logout
+            </MenuItem>
+          </Menu>
+        </Box>
+
+        {/* Navigation Tabs */}
+        <List sx={{ flexGrow: 1, py: 1 }}>
+          {tabItems.map((item, index) => (
+            <ListItem key={item.label} disablePadding>
+              {drawerMinimized ? (
+                <Tooltip title={item.label} placement="right" arrow>
+                  <ListItemButton
+                    selected={tabValue === index}
+                    onClick={() => handleTabChange(index)}
+                    sx={{
+                      mx: 1,
+                      mb: 0.5,
+                      borderRadius: 2,
+                      justifyContent: 'center',
+                      minHeight: 48,
+                      '&.Mui-selected': {
+                        backgroundColor: '#4fc3f7',
+                        color: 'white',
+                        '&:hover': {
+                          backgroundColor: '#29b6f6',
+                        },
+                      },
+                      '&:hover': {
+                        backgroundColor: '#404040',
+                      },
+                    }}
+                  >
+                    <ListItemIcon sx={{ 
+                      color: tabValue === index ? 'white' : '#bdbdbd',
+                      minWidth: 0,
+                      justifyContent: 'center'
+                    }}>
+                      {item.icon}
+                    </ListItemIcon>
+                  </ListItemButton>
+                </Tooltip>
+              ) : (
+                <ListItemButton
+                  selected={tabValue === index}
+                  onClick={() => handleTabChange(index)}
+                  sx={{
+                    mx: 1,
+                    mb: 0.5,
+                    borderRadius: 2,
+                    '&.Mui-selected': {
+                      backgroundColor: '#4fc3f7',
+                      color: 'white',
+                      '&:hover': {
+                        backgroundColor: '#29b6f6',
+                      },
+                    },
+                    '&:hover': {
+                      backgroundColor: '#404040',
+                    },
+                  }}
+                >
+                  <ListItemIcon sx={{ 
+                    color: tabValue === index ? 'white' : '#bdbdbd',
+                    minWidth: 40
+                  }}>
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText 
+                    primary={item.label}
+                    primaryTypographyProps={{
+                      fontSize: '0.875rem',
+                      fontWeight: tabValue === index ? 600 : 400
+                    }}
                   />
-                  <Chip
-                    label={event.event_type}
-                    color="primary"
-                    size="small"
-                    variant="outlined"
-                  />
-                </ListItem>
-              ))}
-              {upcomingEvents.length === 0 && (
-                <ListItem>
-                  <ListItemText primary="No upcoming events" />
-                </ListItem>
+                </ListItemButton>
               )}
-            </List>
-          </Paper>
-        </Grid>
-      </Grid>
+            </ListItem>
+          ))}
+        </List>
+      </Drawer>
+
+      {/* Main Content */}
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          backgroundColor: '#f5f5f5',
+          overflow: 'auto'
+        }}
+      >
+        {/* Tab Panels */}
+        <TabPanel value={tabValue} index={0}>
+          <CalendarTab />
+        </TabPanel>
+        <TabPanel value={tabValue} index={1}>
+          <ProjectsTab />
+        </TabPanel>
+        <TabPanel value={tabValue} index={2}>
+          <EmployeesTab />
+        </TabPanel>
+        <TabPanel value={tabValue} index={3}>
+          <InventoryTab />
+        </TabPanel>
+        <TabPanel value={tabValue} index={4}>
+          <KanbanTab />
+        </TabPanel>
+        <TabPanel value={tabValue} index={5}>
+          <UserSettingsTab />
+        </TabPanel>
+      </Box>
     </Box>
+    </Fade>
   );
 };
 

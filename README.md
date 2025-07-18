@@ -1,12 +1,12 @@
 # ERP Simple - Enterprise Resource Planning System
 
-A comprehensive ERP system built with Django REST Framework, designed to integrate various business functions including HR management, task management, inventory control, calendar scheduling, and more.
+A comprehensive ERP system built with Django REST Framework, designed to integrate various business functions including HR management, project management, inventory control, calendar scheduling, and more.
 
 ## 🚀 Features
 
 - **Authentication System**: User registration, login, and JWT token-based authentication
 - **Employee Management**: HR functionality with departments and employee profiles
-- **Task Management**: Todo lists with categories, priorities, and assignments
+- **Project Management**: Manufacturing projects with progress tracking, client management
 - **Calendar System**: Event scheduling with attendees and recurring options
 - **Inventory Management**: Product tracking with categories, suppliers, and stock movements
 - **Job Management**: Project and job tracking
@@ -19,7 +19,7 @@ backend/
 ├── core/                    # Shared utilities and base models
 ├── authentication/          # User management and authentication
 ├── employees/              # HR management
-├── tasks/                  # Todo lists and task management
+├── projects/               # Project management and tracking
 ├── calendar_app/           # Calendar events and scheduling
 ├── inventory/              # Inventory and product management
 ├── job/                    # Job and project management
@@ -93,7 +93,7 @@ backend/
 Each app contains models that define the data structure:
 - **Core**: `TimeStampedModel`, `Company`
 - **Employees**: `Employee`, `Department`
-- **Tasks**: `Task`, `TaskCategory`
+- **Projects**: `Project`, `ProjectCategory`
 - **Calendar**: `Event`
 - **Inventory**: `Product`, `Category`, `Supplier`, `StockMovement`
 

@@ -3,6 +3,14 @@
   text-align: center;
 }
 
+/* Layout styles */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
 /* Calendar specific styles */
 .rbc-calendar {
   height: 500px;
@@ -18,4 +26,22 @@
 
 .rbc-today {
   background-color: #f0f8ff;
+}
+
+/* Sidebar scrollbar styling */
+.MuiDrawer-paper::-webkit-scrollbar {
+  width: 6px;
+}
+
+.MuiDrawer-paper::-webkit-scrollbar-track {
+  background: #1e1e1e;
+}
+
+.MuiDrawer-paper::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 3px;
+}
+
+.MuiDrawer-paper::-webkit-scrollbar-thumb:hover {
+  background: #777;
 }
